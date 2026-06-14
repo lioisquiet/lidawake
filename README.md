@@ -12,15 +12,20 @@ glyph, so it adapts to light/dark menu bars automatically.
 Under the hood it just toggles `pmset -a disablesleep`, the same thing power
 users run by hand — wrapped in a one-click menu-bar item.
 
-## Install
+## Install — one command
 
-Requires the Xcode Command Line Tools (for the Swift compiler):
+Paste this into Terminal. It does everything on a fresh Mac (installs the Swift
+compiler if missing, clones, builds, sets up the menu-bar app + login item):
 
 ```sh
-xcode-select --install     # once, if you've never installed dev tools
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/lioisquiet/lidawake/main/bootstrap.sh)"
 ```
 
-Then:
+Enter your Mac password **once** when prompted (it installs a passwordless
+`pmset` rule so the toggle never asks again). The sun/moon icon then appears in
+the menu bar, set to start at login.
+
+### Or, from a clone
 
 ```sh
 git clone https://github.com/lioisquiet/lidawake.git
@@ -28,9 +33,8 @@ cd lidawake
 ./install.sh
 ```
 
-Enter your Mac password **once** when prompted (it installs a passwordless
-`pmset` rule so the toggle never asks again). The sun/moon icon appears in the
-menu bar, and it's set to start at login.
+(Needs the Xcode Command Line Tools — `xcode-select --install` — for the Swift
+compiler. The one-command installer handles that for you.)
 
 ## Why a build script instead of a prebuilt app?
 
