@@ -28,17 +28,22 @@ light/dark menu bars automatically.
 …then **one click back to moon** so it sleeps normally and saves battery. The icon always shows
 which mode you're in.
 
-## Install — one command
+## Install — 3 steps
 
-Paste this into Terminal. It does everything on a fresh Mac (installs the Swift compiler if
-missing, clones, builds, sets up the menu-bar app + login item):
+**1.** Open **Terminal** (press `⌘ Space`, type `Terminal`, hit Return).
+
+**2.** Paste this line and press Return:
 
 ```sh
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/lioisquiet/lidawake/main/bootstrap.sh)"
 ```
 
-Enter your Mac password **once** when prompted (it installs a passwordless `pmset` rule so the
-toggle never asks again). The sun/moon icon then appears in the menu bar, set to start at login.
+**3.** Type your Mac password **once** when asked (you won't see it as you type — that's normal —
+just press Return).
+
+That's it. The ☀️/🌙 icon appears in the menu bar and starts automatically at login. **Click it to
+toggle.** One command does everything: it installs the Swift compiler if missing, builds the app,
+sets up the passwordless `pmset` rule, and launches.
 
 ### Or, from a clone
 
