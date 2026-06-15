@@ -1,29 +1,44 @@
-# LidAwake
+# LidAwake 🌙☀️
 
-A tiny macOS menu-bar toggle that keeps your Mac **awake with the lid closed** —
-one click, no Terminal, no settings dialogs.
+**Keep your Mac awake with the lid closed — one click from the menu bar.**
 
-- ☀️ **sun** = staying awake (closing the lid keeps everything running)
+No Terminal incantations, no System Settings spelunking, no background daemon. Just a tiny
+menu-bar icon you tap to flip between *stay awake* and *normal sleep*.
+
+![platform](https://img.shields.io/badge/platform-macOS-black?logo=apple)
+![language](https://img.shields.io/badge/Swift-AppKit-orange?logo=swift&logoColor=white)
+![license](https://img.shields.io/badge/license-MIT-blue)
+![size](https://img.shields.io/badge/code-~80%20lines-brightgreen)
+
+- ☀️ **sun** = staying awake — close the lid and everything keeps running
 - 🌙 **moon** = normal sleep
 
-Click the icon to flip. Right-click to quit. The icon is a monochrome template
-glyph, so it adapts to light/dark menu bars automatically.
+Click to flip. Right-click to quit. The icon is a monochrome template glyph, so it adapts to
+light/dark menu bars automatically.
 
-Under the hood it just toggles `pmset -a disablesleep`, the same thing power
-users run by hand — wrapped in a one-click menu-bar item.
+> If this saves you a Terminal command, a ⭐ is appreciated — it helps others find it.
+
+## Why you'd want this
+
+- 📥 Keep a **long download / upload / backup** running while the laptop is shut and in a bag.
+- 🖥️ Run **clamshell with an external display** without it dozing when you don't want it to.
+- 🛠️ Leave a **local build, render, or dev server** going with the lid down.
+- 🎧 Keep **audio / a call / a sync** alive when you close the lid for a second.
+
+…then **one click back to moon** so it sleeps normally and saves battery. The icon always shows
+which mode you're in.
 
 ## Install — one command
 
-Paste this into Terminal. It does everything on a fresh Mac (installs the Swift
-compiler if missing, clones, builds, sets up the menu-bar app + login item):
+Paste this into Terminal. It does everything on a fresh Mac (installs the Swift compiler if
+missing, clones, builds, sets up the menu-bar app + login item):
 
 ```sh
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/lioisquiet/lidawake/main/bootstrap.sh)"
 ```
 
-Enter your Mac password **once** when prompted (it installs a passwordless
-`pmset` rule so the toggle never asks again). The sun/moon icon then appears in
-the menu bar, set to start at login.
+Enter your Mac password **once** when prompted (it installs a passwordless `pmset` rule so the
+toggle never asks again). The sun/moon icon then appears in the menu bar, set to start at login.
 
 ### Or, from a clone
 
@@ -33,30 +48,45 @@ cd lidawake
 ./install.sh
 ```
 
-(Needs the Xcode Command Line Tools — `xcode-select --install` — for the Swift
-compiler. The one-command installer handles that for you.)
+(Needs the Xcode Command Line Tools — `xcode-select --install` — for the Swift compiler. The
+one-command installer handles that for you.)
 
-## Why a build script instead of a prebuilt app?
+## FAQ
 
-Three reasons copying a `.app` between Macs doesn't work, all handled by
-`install.sh`:
+**Will it drain my battery?** Preventing sleep uses more power than sleeping — that's the point.
+Flip it back to 🌙 when you're done; the icon shows the state at a glance so you never forget.
 
-1. **Chip** — the binary is architecture-specific (Apple Silicon vs Intel).
-   Building from source compiles for whatever Mac you're on.
-2. **Gatekeeper** — an unsigned app copied from another machine gets quarantined
-   ("can't be opened"). A locally built one isn't.
-3. **The sudoers rule** — `/etc/sudoers.d/lidawake` is what lets the toggle run
-   `pmset` without a password. It's machine-local and *not* inside the app, so a
-   copied app silently fails to toggle. The installer sets it up.
+**Is it safe / what does it actually do?** It only toggles Apple's own `pmset -a disablesleep`,
+the documented clamshell-sleep switch. No kernel extensions, no telemetry, no daemon beyond the
+menu-bar app itself. ~80 lines of Swift you can read in a minute.
+
+**Why not just `caffeinate`?** `caffeinate` keeps the Mac awake but, by default, **not** with the
+lid closed — `disablesleep` is the clamshell-specific switch. LidAwake wraps it in a one-click
+visual toggle so you don't memorize flags or leave a Terminal open.
+
+**Heat?** Running hard in clamshell can get warm — keep it on a hard surface (not a soft bag)
+under sustained load.
+
+## Why a build script instead of a prebuilt `.app`?
+
+Three reasons copying a `.app` between Macs doesn't work — all handled by `install.sh`:
+
+1. **Chip** — the binary is architecture-specific (Apple Silicon vs Intel). Building from source
+   compiles for whatever Mac you're on.
+2. **Gatekeeper** — an unsigned app copied from another machine gets quarantined ("can't be
+   opened"). A locally built one isn't.
+3. **The sudoers rule** — `/etc/sudoers.d/lidawake` is what lets the toggle run `pmset` without a
+   password. It's machine-local and *not* inside the app, so a copied app silently fails. The
+   installer sets it up (validated with `visudo -c`).
 
 ## How it works
 
-- `main.swift` — ~80 lines of Cocoa: an `LSUIElement` menu-bar app that reads
-  `pmset -g` to show the current state and runs `sudo -n pmset -a disablesleep
-  <0|1>` to flip it.
-- `install.sh` — builds it (`swiftc`), assembles `~/Applications/LidAwake.app`,
-  installs the sudoers rule (validated with `visudo -c`), adds a Login Item, and
-  launches it.
+- `main.swift` — ~80 lines of AppKit: an `LSUIElement` menu-bar app that reads `pmset -g` to show
+  the current state and runs `sudo -n pmset -a disablesleep <0|1>` to flip it.
+- `install.sh` — builds it (`swiftc`), assembles `~/Applications/LidAwake.app`, installs the
+  sudoers rule, adds a Login Item, and launches it.
+- `bootstrap.sh` — the one-command entry point: ensures the Swift compiler, clones, runs the
+  installer.
 
 ## Verify it's working
 
@@ -75,6 +105,11 @@ sudo rm -f /etc/sudoers.d/lidawake
 sudo pmset -a disablesleep 0       # back to normal sleep
 ```
 
+## Contributing
+
+Issues and PRs welcome — it's intentionally tiny and dependency-free. Ideas: a menu with a timer
+("stay awake for 1h"), a packaged signed release, an Intel test pass.
+
 ## License
 
-MIT
+[MIT](LICENSE) — do whatever you like.
